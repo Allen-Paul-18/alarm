@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 part 'alarm_model.g.dart';
 
@@ -47,6 +48,12 @@ class AlarmModel {
   @HiveField(8)
   final bool enabled;
 
+  @HiveField(9)
+  final int? customSnoozeMinutes; // per-alarm default
+
+  @HiveField(10)
+  final bool useCustomSnooze;
+
   const AlarmModel({
     required this.id,
     required this.dateTime,
@@ -57,7 +64,14 @@ class AlarmModel {
     this.snoozeEnabled = true,
     this.soundPath = 'assets/alarm.mp3',
     this.enabled = true,
+    this.customSnoozeMinutes,
+    this.useCustomSnooze = false,
   });
+
+  String formatTime(BuildContext context, DateTime dateTime) {
+    final time = TimeOfDay.fromDateTime(dateTime);
+    return time.format(context); // ✅ respects AM/PM & locale
+  }
 
   /// Derived helpers (NOT stored)
   bool get isRepeating => repeatType != RepeatType.none;

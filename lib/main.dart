@@ -3,10 +3,10 @@ import 'package:alarm/alarm.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'home.dart';
-import 'app_theme.dart';
-import 'alarm_model.dart';
-import 'alarm_service.dart';
-import 'alarm_ring_page.dart';
+import 'settings/app_theme.dart';
+import 'alarm/alarm_model.dart';
+import 'alarm/alarm_service.dart';
+import 'alarm/alarm_ring_screen_page.dart';
 
 final GlobalKey<NavigatorState> navigatorKey =
 GlobalKey<NavigatorState>();

@@ -1,6 +1,6 @@
 import 'package:alarm/alarm.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'alarm_model.dart';
+import 'package:alarm_app/alarm/alarm_model.dart';
 
 class AlarmService {
   static final Box<AlarmModel> _box =
@@ -24,9 +24,8 @@ class AlarmService {
     );
   }
 
-  /// ➕ Create alarm (ONLY ONCE PER ID)
+  /// ➕ Create alarm
   static Future<void> setAlarm(AlarmModel model) async {
-    // ⛔ Kill any existing system alarm with same ID
     await Alarm.stop(model.id);
 
     // ✅ Update or insert SAME Hive entry
@@ -39,7 +38,7 @@ class AlarmService {
     }
   }
 
-  /// 🔁 Enable / disable alarm (NO NEW ENTRIES)
+  /// 🔁 Enable / disable alarm
   static Future<void> updateAlarm(AlarmModel model) async {
     // ⛔ Stop existing scheduled instance
     await Alarm.stop(model.id);
@@ -52,6 +51,32 @@ class AlarmService {
         alarmSettings: _settingsFromModel(model),
       );
     }
+  }
+
+
+  ///snooze
+  static Future<void> snoozeAlarm(
+      AlarmModel alarm,
+      int minutes,
+      ) async {
+    final snoozed = AlarmModel(
+      id: alarm.id,
+      dateTime: DateTime.now().add(Duration(minutes: minutes)),
+      label: alarm.label,
+      repeatType: alarm.repeatType,
+      repeatDays: alarm.repeatDays,
+      vibrate: alarm.vibrate,
+      snoozeEnabled: alarm.snoozeEnabled,
+      soundPath: alarm.soundPath,
+      enabled: true,
+      customSnoozeMinutes: alarm.customSnoozeMinutes,
+      useCustomSnooze: alarm.useCustomSnooze,
+    );
+
+    // remember globally
+    Hive.box('settings').put('last_snooze_minutes', minutes);
+
+    await updateAlarm(snoozed);
   }
 
   /// 🗑 Delete alarm completely

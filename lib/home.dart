@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'alarm_create_page.dart';
-import 'alarm_service.dart';
-import 'alarm_model.dart';
-import 'settings_page.dart';
+import 'alarm/alarm_create_page.dart';
+import 'alarm/alarm_service.dart';
+import 'alarm/alarm_model.dart';
+import 'settings/settings_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -122,8 +122,20 @@ class HomePage extends StatelessWidget {
                     vertical: 8,
                   ),
                   child: ListTile(
-                    title: Text(alarm.label),
+                    title: Text(
+                      '${TimeOfDay.fromDateTime(alarm.dateTime).format(context)} • ${alarm.label}',
+                    ),
                     subtitle: Text(alarm.repeatDescription),
+
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => CreateAlarmPage(alarm: alarm),
+                        ),
+                      );
+                    },
+
                     trailing: Switch(
                       value: alarm.enabled,
                       onChanged: (value) async {
