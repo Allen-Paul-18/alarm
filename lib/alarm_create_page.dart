@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'alarm_model.dart';
+import 'alarm_service.dart';
 
 const Map<int, String> weekDays = {
   1: 'Mon',
@@ -69,7 +70,7 @@ class _CreateAlarmPageState extends State<CreateAlarmPage> {
     });
   }
 
-  void _saveAlarm() {
+  Future<void> _saveAlarm() async {
     if (_labelController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter alarm name')),
@@ -78,17 +79,20 @@ class _CreateAlarmPageState extends State<CreateAlarmPage> {
     }
 
     final alarm = AlarmModel(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: DateTime.now().millisecondsSinceEpoch % 0xFFFFFFFF,
       dateTime: _selectedDateTime,
       label: _labelController.text.trim(),
       repeatType: _repeatType,
       repeatDays:
-      _repeatType == RepeatType.weekly
-          ? _selectedDays.toList()
-          : [],
+      _repeatType == RepeatType.weekly ? _selectedDays.toList() : [],
+      enabled: true,
     );
 
-    // For now we just return it
+    // 🔴 THIS WAS MISSING
+    await AlarmService.setAlarm(alarm);
+
+    if (!mounted) return;
+
     Navigator.pop(context, alarm);
   }
 

@@ -34,6 +34,7 @@ class SettingsPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 target.value = tempColor;
+                AppTheme.save(); // ✅ persist
                 Navigator.pop(context);
               },
               child: const Text('Save'),
@@ -50,21 +51,25 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(title: const Text('Settings')),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView( // 👈 important
+        child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               /// 🌙 Dark mode
               ValueListenableBuilder<ThemeMode>(
                 valueListenable: AppTheme.themeMode,
                 builder: (context, mode, _) {
                   return SwitchListTile(
+                    activeColor: Colors.white,
+                    activeTrackColor: Colors.grey,
+                    inactiveThumbColor: Colors.black,
+                    inactiveTrackColor: Colors.grey,
                     title: const Text('Dark Mode'),
                     value: mode == ThemeMode.dark,
                     onChanged: (enabled) {
                       AppTheme.themeMode.value =
                       enabled ? ThemeMode.dark : ThemeMode.light;
+                      AppTheme.save();
                     },
                   );
                 },
@@ -124,7 +129,10 @@ class SettingsPage extends StatelessWidget {
                 runSpacing: 12,
                 children: AppTheme.presets.map((preset) {
                   return GestureDetector(
-                    onTap: () => AppTheme.applyPreset(preset),
+                    onTap: () {
+                      AppTheme.applyPreset(preset);
+                      AppTheme.save(); // ✅ persist
+                    },
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
